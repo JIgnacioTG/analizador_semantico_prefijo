@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- *
- * @author LENOVO
- */
+
 public class Archivo {
     
     public static void guardar(String nombre, String extension, String texto) {
@@ -34,8 +31,8 @@ public class Archivo {
         }
     }
     
-    public static String arregloTexto (String[] arreglo) { //Método para convertir un arreglo a texto.
-        StringBuilder stb = new StringBuilder();    //Se inicializa la construcción del texto.
+    public static String arregloTexto (String[] arreglo) { //Metodo para convertir un arreglo a texto.
+        StringBuilder stb = new StringBuilder();    //Se inicializa la construccion del texto.
         for (String texto : arreglo) {  //Se recorre el arreglo.
             stb.append(texto);  //Al texto se le va agregando cada elemento del arreglo.
         }
@@ -45,7 +42,7 @@ public class Archivo {
     // metodo auxiliar para la eliminacion de elementos de un arreglo
     public static String[] borrarArreglo (int posicion, String[] arreglo) {
         
-        // se inicializa un nuevo arreglo con un tamaño menor al existente
+        // se inicializa un nuevo arreglo con un tamanio menor al existente
         String[] nuevoArreglo = new String[arreglo.length - 1];
         
         if (posicion > 0){

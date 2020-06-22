@@ -7,18 +7,15 @@ package analizadorsemantico;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author Misael
- */
+
 public class Optimizador {
     
-    private static final String LINEA = System.getProperty("line.separator"); //Variable que genera los saltos de línea detectando el sistema del usuario.
+    private static final String LINEA = System.getProperty("line.separator"); //Variable que genera los saltos de linea detectando el sistema del usuario.
     
-    // Metodo encargado de la optimización del código.
+    // Metodo encargado de la optimizacion del codigo.
     public static Codigo optimizarCodigo(Codigo codigo) {
         
-        // Objeto para la construcción de strings.
+        // Objeto para la construccion de strings.
         StringBuilder stb = new StringBuilder();
         
         // Listas que almacenaran los tokens optimizados.
@@ -51,7 +48,7 @@ public class Optimizador {
             // Si hay un delimitador.
             if (actualToken.equalsIgnoreCase("DEL")) {
                 
-                // Si no es el último token.
+                // Si no es el ultimo token.
                 if (!ultimo) {
                     
                     // Verificar si el siguiente token es un corchete.
@@ -66,14 +63,14 @@ public class Optimizador {
                     // Si no es un corchete
                     else {
                         
-                        // Se agrega el delimitador junto a un salto de línea.
+                        // Se agrega el delimitador junto a un salto de linea.
                         stb.append(actualValor).append(LINEA);
                         tokensOpt.add(actualToken);
                         valorTokensOpt.add(actualValor);
                     }
                 }
                 
-                // Si es el último token.
+                // Si es el ultimo token.
                 else {
                     
                     // Se agrega tal cual el delimitador.
@@ -89,7 +86,7 @@ public class Optimizador {
                 // Si el anterior token es un parentesis.
                 if (preToken.equalsIgnoreCase("PAR2")) {
                     
-                    // Se realiza un salto de línea
+                    // Se realiza un salto de linea
                     stb.append(LINEA);
                 }
                 
@@ -109,7 +106,7 @@ public class Optimizador {
             // Si hay un corchete inicial
             else if (actualToken.equalsIgnoreCase("COR1")) {
                 
-                // Se escribe un salto de línea y se escribe el corchete inicial.
+                // Se escribe un salto de linea y se escribe el corchete inicial.
                 stb.append(LINEA);
                 stb.append(actualValor);
                 tokensOpt.add(actualToken);
@@ -119,14 +116,14 @@ public class Optimizador {
             // Si hay un corchete final
             else if (actualToken.equalsIgnoreCase("COR2")) {
                 
-                // Se escribe el corchete final y un salto de línea.
+                // Se escribe el corchete final y un salto de linea.
                 stb.append(actualValor);
                 tokensOpt.add(actualToken);
                 valorTokensOpt.add(actualValor);
                 stb.append(LINEA);
             }
             
-            // Instrucción 3: Si hay una asignación.
+            // Instruccion 3: Si hay una asignacion.
             else if (actualToken.equalsIgnoreCase("OAS")) {
                 
                 // Se debe agregar el operador.
@@ -137,7 +134,7 @@ public class Optimizador {
                 // Bandera indicadora de que se ha encontrado el reemplazo
                 Boolean reemplazo = false;
                 
-                // Se almacenará el codigo que contiene el IDE anterior en esta variable.
+                // Se almacenara el codigo que contiene el IDE anterior en esta variable.
                 String preCodigo = "";
                 
                 // Se ignora la optimizacion si se trata de una asignacion simple.
@@ -165,17 +162,17 @@ public class Optimizador {
                     
                 }
                 
-                // Ahora se debe analizar en todos los IDE su valor para la sustitución.
+                // Ahora se debe analizar en todos los IDE su valor para la sustitucion.
                 for (int j = 0; j < codigo.variable.size(); j++) {
                     
                     // Se obtiene el valor de las variables y se compara si contienen alguna parte del codigo.
-                    // De ser así (y que no sea la misma variable).
+                    // De ser asi (y que no sea la misma variable).
                     if (preCodigo.contains(codigo.valor.get(j)) && !preValor.equalsIgnoreCase(codigo.variable.get(j)) && !codigo.valor.get(j).equalsIgnoreCase("1 ") && !codigo.valor.get(j).equalsIgnoreCase("null")) {
                         
                         // Se guarda el caracter anterior
                         int charAnt = preCodigo.indexOf(codigo.valor.get(j)) - 1;
                         
-                        // Pero si la posición es -1, se evita una posible excepcion.
+                        // Pero si la posicion es -1, se evita una posible excepcion.
                         if (charAnt == -1) {
                             charAnt = 0;
                         }
@@ -185,7 +182,7 @@ public class Optimizador {
                             continue;
                         }
                         
-                        // Se sustituye la parte del código por la variable.
+                        // Se sustituye la parte del codigo por la variable.
                         preCodigo = preCodigo.replace(codigo.valor.get(j), codigo.variable.get(j)+ " ");
                         
                         // Bandera para indicar que si se realizo una sustitucion.
@@ -201,11 +198,11 @@ public class Optimizador {
                     // Se verifica lo capturado.
                     for (int j = 0; j < preCodigoTokens.length ; j++) {
                         
-                        // Si la palabra del código actual es 1 y a continuación hay una multiplicación, el 1 se elimina.
+                        // Si la palabra del codigo actual es 1 y a continuacion hay una multiplicacion, el 1 se elimina.
                         if (preCodigoTokens[j].equalsIgnoreCase("1") && (preCodigoTokens[j+1].equalsIgnoreCase("(") || preCodigoTokens[j+1].equalsIgnoreCase("*"))) {
                             preCodigoTokens[j] = "";
                                 
-                            // Si había un asterisco, se elimina de igual forma.
+                            // Si habia un asterisco, se elimina de igual forma.
                             if (preCodigoTokens[j+1].equalsIgnoreCase("*")) {
                                 preCodigoTokens[j] = "";
                                 j++;
@@ -235,7 +232,7 @@ public class Optimizador {
                     preCodigo = Archivo.arregloTexto(preCodigoTokens);
                     stb.append(preCodigo);
                         
-                    // Se salta todo el análisis de la línea (ya esta optimizado).
+                    // Se salta todo el analisis de la linea (ya esta optimizado).
                     while (!codigo.token.get(i+1).equalsIgnoreCase("DEL")) {
                         i++;
                     }
@@ -259,7 +256,7 @@ public class Optimizador {
         codigo.token = tokensOpt;
         codigo.valorToken = valorTokensOpt;
         
-        // Se guarda el código optimizado
+        // Se guarda el codigo optimizado
         Archivo.guardar("Optimizado.txt", stb.toString());
         
         return codigo;

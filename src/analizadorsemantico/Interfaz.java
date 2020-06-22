@@ -1,12 +1,15 @@
 package analizadorsemantico;
 
-import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
 public class Interfaz extends javax.swing.JFrame {
     
-    private Codigo codigo;
-    private static final String LINEA = System.getProperty("line.separator"); //Variable que genera los saltos de línea detectando el sistema del usuario.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Codigo codigo;
+    private static final String LINEA = System.getProperty("line.separator"); //Variable que genera los saltos de linea detectando el sistema del usuario.
     
     DefaultTableModel modelo = new DefaultTableModel(); //Se define un nuevo modelo de tabla.
     public Interfaz() {
@@ -14,9 +17,9 @@ public class Interfaz extends javax.swing.JFrame {
         setLocationRelativeTo(null);    //Centrar la interfaz a la mitad de la pantalla.
         String titulos[]={"Lexema", "Tipo", "Valor"};   //Se crean los titlos a la tabla.
         modelo.setColumnIdentifiers(titulos);   //Se agregan los titulos al modelo.
-        Símbolos.setModel(modelo);  //Se envía el modelo de tabla al JTable.
+        Simbolos.setModel(modelo);  //Se envia el modelo de tabla al JTable.
     }
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -29,7 +32,7 @@ public class Interfaz extends javax.swing.JFrame {
         Salida = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        Símbolos = new javax.swing.JTable();
+        Simbolos = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         Enviar = new javax.swing.JButton();
 
@@ -41,7 +44,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 48)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Analizador Semántico");
+        jLabel1.setText("Analizador Semantico");
 
         Entrada.setColumns(20);
         Entrada.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -50,7 +53,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Introduzca las líneas de código:");
+        jLabel2.setText("Introduzca las lineas de codigo:");
 
         Salida.setColumns(20);
         Salida.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -61,8 +64,8 @@ public class Interfaz extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Output");
 
-        Símbolos.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Símbolos.setModel(new javax.swing.table.DefaultTableModel(
+        Simbolos.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Simbolos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
                 {},
@@ -73,11 +76,11 @@ public class Interfaz extends javax.swing.JFrame {
 
             }
         ));
-        jScrollPane3.setViewportView(Símbolos);
+        jScrollPane3.setViewportView(Simbolos);
 
         jLabel4.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Tabla de símbolos");
+        jLabel4.setText("Tabla de simbolos");
 
         Enviar.setBackground(new java.awt.Color(255, 0, 0));
         Enviar.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -159,20 +162,20 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
  
     private void EnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnviarActionPerformed
-        codigo = Analizador.busquedaErrores(Entrada.getText()); //Se buscan posibles errores en el código y se realizan las asignaciones.
-        codigo = Optimizador.optimizarCodigo(codigo);   //Se optimiza el código con la instrucción 3.
-        codigo = Intermedio.generarIntermedio(codigo);  //Se genera el código intermedio.
-        codigo = Ensamblador.generarObjeto(codigo); //Se genera el código objeto.
+        codigo = Analizador.busquedaErrores(Entrada.getText()); //Se buscan posibles errores en el codigo y se realizan las asignaciones.
+//        codigo = Optimizador.optimizarCodigo(codigo);   //Se optimiza el codigo con la instruccion 3.
+        codigo = Intermedio.generarIntermedio(codigo);  //Se genera el codigo intermedio.
+        codigo = Ensamblador.generarObjeto(codigo); //Se genera el codigo objeto.
         rellenarTablas();
     }//GEN-LAST:event_EnviarActionPerformed
 
     public void rellenarTablas() {
-        for(int i=0; i<Símbolos.getRowCount();i++) //For para eliminar filas y limpiar la tabla.
+        for(int i=0; i<Simbolos.getRowCount();i++) //For para eliminar filas y limpiar la tabla.
         {
             modelo.removeRow(i);
             i-=1;
         }
-        for(int e=0; e<codigo.variable.size(); e++)  //Se verifica el tamaño de mi vector de datos
+        for(int e=0; e<codigo.variable.size(); e++)  //Se verifica el tamanio de mi vector de datos
         {
             modelo.addRow(new Object[]{codigo.variable.get(e),codigo.tipo.get(e),codigo.valor.get(e)});    //Se imprimen todos los valores en el lexema
         }
@@ -196,7 +199,7 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JTextArea Entrada;
     private javax.swing.JButton Enviar;
     private javax.swing.JTextArea Salida;
-    private javax.swing.JTable Símbolos;
+    private javax.swing.JTable Simbolos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -6,13 +6,8 @@
 package analizadorsemantico;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
-/**
- *
- * @author LENOVO
- */
+
 public class Tripleta {
     
     // la tripleta contiene la informacion necesaria para el codigo intermedio.
@@ -22,23 +17,20 @@ public class Tripleta {
     ArrayList<String> objeto;
     ArrayList<String> fuente;
     ArrayList<String> operador;
-    Queue<Integer> posFinalSwitch;
     
     public Tripleta() {
         numeroIns = new ArrayList<>();
         objeto = new ArrayList<>();
         fuente = new ArrayList<>();
         operador = new ArrayList<>();
-        posFinalSwitch = new LinkedList<>();
     }
     
     public Tripleta(ArrayList<Integer> numeroIns, ArrayList<String> objeto, ArrayList<String>  fuente, 
-            ArrayList<String> operador, Queue<Integer> posFinalSwitch) {
+            ArrayList<String> operador) {
         this.numeroIns = numeroIns;
         this.objeto = objeto;
         this.fuente = fuente;
         this.operador = operador;
-        this.posFinalSwitch = posFinalSwitch;
     }
     
 }

@@ -8,10 +8,7 @@ package analizadorsemantico;
 import java.util.ArrayList;
 import java.util.Stack;
 
-/**
- *
- * @author Misael
- */
+
 public class Codigo {
     
     ArrayList<String> token;
