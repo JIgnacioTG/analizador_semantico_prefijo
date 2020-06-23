@@ -27,9 +27,12 @@ public class Intermedio {
         ArrayList<String> objeto = new ArrayList<>();
         ArrayList<String> fuente = new ArrayList<>();
         ArrayList<String> operador = new ArrayList<>();
+        ArrayList<String> prefijo = new ArrayList<>();
         Stack<String> variableIf = new Stack<>();
         Stack<String> variableElse = new Stack<>();
         Stack<String> ultimoOperador = new Stack<>();
+        
+        StringBuilder stb = new StringBuilder();
         
         // se verifican los tokens uno por uno.
         for (int i = 0; i < codigo.token.size(); i++) {
@@ -101,7 +104,7 @@ public class Intermedio {
                         fuente.add("TRFALSE");
                         operador.add("Reemplazar"+variableIf.size());
                         
-                        // Se indica que el último operador ingresado es el if
+                        // Se indica que el ultimo operador ingresado es el if
                         ultimoOperador.push("if");
                 	}
                 	// En caso contrario, debemos hacer la salida dos lineas despues
@@ -131,7 +134,7 @@ public class Intermedio {
                         operador.add(String.format("%d", numIns));
                         numElse++;
                         
-                        // Se indica que el último operador ingresado es el else
+                        // Se indica que el ultimo operador ingresado es el else
                         ultimoOperador.push("else");
                 	}
                 	// En caso contrario, debemos hacer el JUMP dos lineas despues
@@ -162,7 +165,7 @@ public class Intermedio {
             		String operadorEvaluar = ultimoOperador.pop();
             		// Entonces definimos si es un if o else
             		if (operadorEvaluar.equalsIgnoreCase("if")) {
-            			// La siguiente instrucción es una más
+            			// La siguiente instruccion es una mas
             			sigIns++;
             			if (variableIf.size() > 0) {    //Si hay al menos una condicional if activa.
                             while (operador.indexOf("Reemplazar"+variableIf.size()) != -1) {    //Se va realizar de manera ciclica el reemplazo de numero de instruccion mientras exista.
@@ -189,6 +192,9 @@ public class Intermedio {
             // Si el token es un operador de asignacion.
             if(codigo.token.get(i).equalsIgnoreCase("OAS")) {
                 
+                // Se inicializa de nuevo el StringBuilder para limpiar los datos del prefijo
+                stb = new StringBuilder();
+                
                 // Se considera si hay un delimitador despues de su siguiente token
                 if (codigo.token.get(i+2).equalsIgnoreCase("DEL") || codigo.token.get(i+2).equalsIgnoreCase("COM")) {
                     
@@ -206,16 +212,27 @@ public class Intermedio {
                     // Variable a la que se asignara el resultado final.
                     String variableAsig = codigo.valorToken.get(i-1);
                     
+                    // Lo guardamos en el String que la operacion infija
+                    stb.append(variableAsig);
+                    
                     // se almacenan los tokens de la operacion.
                     ArrayList<String> tokensOperacion = new ArrayList<>();
                     
                     // Saltamos el guardado del operador de asignacion.
                     i++;
                     
+                    // Pero lo guardamos en el infijo
+                    stb.append("=");
+                    
+                    // Entonces recorremos los tokens de la operacion
                     while (!codigo.token.get(i).equalsIgnoreCase("DEL")) {
                         tokensOperacion.add(codigo.valorToken.get(i));
+                        stb.append(codigo.valorToken.get(i));
                         i++;
                     }
+                    
+                    // Realizamos el prefijo de la operacion y la almacenamos
+                    prefijo.add(Prefijo.convertirInfijoaPrefijo(stb.toString()));
                     
                     // Se va recorriendo la lista hasta que no queden variables por comparar
                     while (tokensOperacion.size() > 1) {
@@ -264,10 +281,10 @@ public class Intermedio {
                                     if (tokensParentesis.lastIndexOf("*") != -1) {
 
                                     	// Variable que almacenara la fuente temporal
-                                		String fuenteTemp = "";
-                                    	// Debemos revisar si el anterior objeto no es T1
-                                    	if (!objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
-                                    		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                                        String fuenteTemp = "";
+                                    	// Debemos revisar si no hay objetos registrados o el anterior objeto no es T1
+                                        if (objeto.isEmpty() || !objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
+                                            // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                             numeroIns.add(numIns);
                                             objeto.add("T1");
                                             fuente.add(tokensParentesis.remove(tokensParentesis.lastIndexOf("*")-1));
@@ -283,8 +300,8 @@ public class Intermedio {
                                             numIns++;
                                     	}
                                     	else {
-                                    		fuenteTemp = tokensParentesis.remove(tokensParentesis.lastIndexOf("*")-1);
-                                    		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                                            fuenteTemp = tokensParentesis.remove(tokensParentesis.lastIndexOf("*")-1);
+                                            // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                             numeroIns.add(numIns);
                                             objeto.add("T1");
                                             fuente.add(fuenteTemp);
@@ -294,13 +311,13 @@ public class Intermedio {
                                             operador.add(tokensParentesis.remove(tokensParentesis.lastIndexOf("*")));
                                             numIns++;
                                     	}
-                                    	// Si hay más de un elemento
+                                    	// Si hay mas de un elemento
                                     	if (tokensParentesis.size() > 1)
-            	                        	// Se agrega a la lista el triplo realizado.
+                                            // Se agrega a la lista el triplo realizado.
             	                            tokensParentesis.add(fuenteTemp);
                                     	else
-                                    		// Si lo que continua es la operacion, nos preparamos para asignar el triplo
-                                    		tokensParentesis.add("T1");
+                                            // Si lo que continua es la operacion, nos preparamos para asignar el triplo
+                                            tokensParentesis.add("T1");
 
                                         continue;
                                     }
@@ -309,10 +326,10 @@ public class Intermedio {
                                     else if (tokensParentesis.lastIndexOf("/") != -1) {
 
                                     	// Variable que almacenara la fuente temporal
-                                		String fuenteTemp = "";
-                                    	// Debemos revisar si el anterior objeto no es T1
-                                    	if (!objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
-                                    		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                                        String fuenteTemp = "";
+                                    	// Debemos revisar si no hay objetos registrados o el anterior objeto no es T1
+                                        if (objeto.isEmpty() || !objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
+                                            // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                             numeroIns.add(numIns);
                                             objeto.add("T1");
                                             fuente.add(tokensParentesis.remove(tokensParentesis.lastIndexOf("/")-1));
@@ -328,8 +345,8 @@ public class Intermedio {
                                             numIns++;
                                     	}
                                     	else {
-                                    		fuenteTemp = tokensParentesis.remove(tokensParentesis.lastIndexOf("/")-1);
-                                    		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                                            fuenteTemp = tokensParentesis.remove(tokensParentesis.lastIndexOf("/")-1);
+                                            // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                             numeroIns.add(numIns);
                                             objeto.add("T1");
                                             fuente.add(fuenteTemp);
@@ -339,13 +356,13 @@ public class Intermedio {
                                             operador.add(tokensParentesis.remove(tokensParentesis.lastIndexOf("/")));
                                             numIns++;
                                     	}
-                                    	// Si hay más de un elemento
+                                    	// Si hay mas de un elemento
                                     	if (tokensParentesis.size() > 1)
-            	                        	// Se agrega a la lista el triplo realizado.
+                                            // Se agrega a la lista el triplo realizado.
             	                            tokensParentesis.add(fuenteTemp);
                                     	else
-                                    		// Si lo que continua es la operacion, nos preparamos para asignar el triplo
-                                    		tokensParentesis.add("T1");
+                                            // Si lo que continua es la operacion, nos preparamos para asignar el triplo
+                                            tokensParentesis.add("T1");
 
                                         continue;
                                     }
@@ -354,10 +371,10 @@ public class Intermedio {
                                     else {
                                     	
                                     	// Variable que almacenara la fuente temporal
-                                		String fuenteTemp = "";
-                                    	// Debemos revisar si el anterior objeto no es T1
-                                    	if (!objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
-                                    		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                                        String fuenteTemp = "";
+                                    	// Debemos revisar si no hay objetos registrados o el anterior objeto no es T1
+                                        if (objeto.isEmpty() || !objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
+                                            // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                             numeroIns.add(numIns);
                                             objeto.add("T1");
                                             fuente.add(tokensParentesis.remove(tokensParentesis.size()-3));
@@ -373,8 +390,8 @@ public class Intermedio {
                                             numIns++;
                                     	}
                                     	else {
-                                    		fuenteTemp = tokensParentesis.remove(tokensParentesis.size()-3);
-                                    		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                                            fuenteTemp = tokensParentesis.remove(tokensParentesis.size()-3);
+                                            // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                             numeroIns.add(numIns);
                                             objeto.add("T1");
                                             fuente.add(fuenteTemp);
@@ -384,13 +401,13 @@ public class Intermedio {
                                             operador.add(tokensParentesis.remove(tokensParentesis.size()-1));
                                             numIns++;
                                     	}
-                                    	// Si hay más de un elemento
+                                    	// Si hay mas de un elemento
                                     	if (tokensParentesis.size() > 1)
-            	                        	// Se agrega a la lista el triplo realizado.
+                                            // Se agrega a la lista el triplo realizado.
             	                            tokensParentesis.add(fuenteTemp);
                                     	else
-                                    		// Si lo que continua es la operacion, nos preparamos para asignar el triplo
-                                    		tokensParentesis.add("T1");
+                                            // Si lo que continua es la operacion, nos preparamos para asignar el triplo
+                                            tokensParentesis.add("T1");
                                     }
                                     
                                 }
@@ -456,11 +473,11 @@ public class Intermedio {
                         // Si hay una multiplicacion en la operacion.
                         else if (tokensOperacion.lastIndexOf("*") != -1) {
                         	
-                        	// Variable que almacenara la fuente temporal
-                    		String fuenteTemp = "";
-                        	// Debemos revisar si el anterior objeto no es T1
-                        	if (!objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
-                        		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                            // Variable que almacenara la fuente temporal
+                            String fuenteTemp = "";
+                            // Debemos revisar si no hay objetos registrados o el anterior objeto no es T1
+                            if (objeto.isEmpty() || !objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
+                                // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                 numeroIns.add(numIns);
                                 objeto.add("T1");
                                 fuente.add(tokensOperacion.remove(tokensOperacion.lastIndexOf("*")-1));
@@ -474,10 +491,10 @@ public class Intermedio {
                                 fuente.add(fuenteTemp);
                                 operador.add(tokensOperacion.remove(tokensOperacion.lastIndexOf("*")));
                                 numIns++;
-                        	}
-                        	else {
-                        		fuenteTemp = tokensOperacion.remove(tokensOperacion.lastIndexOf("*")-1);
-                        		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                            }
+                            else {
+                                fuenteTemp = tokensOperacion.remove(tokensOperacion.lastIndexOf("*")-1);
+                                // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                 numeroIns.add(numIns);
                                 objeto.add("T1");
                                 fuente.add(fuenteTemp);
@@ -486,26 +503,26 @@ public class Intermedio {
                                 // Asignamos el operador
                                 operador.add(tokensOperacion.remove(tokensOperacion.lastIndexOf("*")));
                                 numIns++;
-                        	}
-                        	// Si hay más de un elemento
-                        	if (tokensOperacion.size() > 1)
-	                        	// Se agrega a la lista el triplo realizado.
-	                            tokensOperacion.add(fuenteTemp);
-                        	else
-                        		// Si lo que continua es la operacion, nos preparamos para asignar el triplo
-                        		tokensOperacion.add("T1");
+                            }
+                            // Si hay mas de un elemento
+                            if (tokensOperacion.size() > 1)
+                                // Se agrega a la lista el triplo realizado.
+                                tokensOperacion.add(fuenteTemp);
+                            else
+                                // Si lo que continua es la operacion, nos preparamos para asignar el triplo
+                                tokensOperacion.add("T1");
                             
                             continue;
                         }
                         
                         // Si hay una division en la operacion.
                         else if (tokensOperacion.lastIndexOf("/") != -1) {
-                        	
-                        	// Variable que almacenara la fuente temporal
-                    		String fuenteTemp = "";
-                        	// Debemos revisar si el anterior objeto no es T1
-                        	if (!objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
-                        		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+
+                            // Variable que almacenara la fuente temporal
+                            String fuenteTemp = "";
+                            // Debemos revisar si no hay objetos registrados o el anterior objeto no es T1
+                            if (objeto.isEmpty() || !objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
+                                // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                 numeroIns.add(numIns);
                                 objeto.add("T1");
                                 fuente.add(tokensOperacion.remove(tokensOperacion.lastIndexOf("/")-1));
@@ -519,10 +536,10 @@ public class Intermedio {
                                 fuente.add(fuenteTemp);
                                 operador.add(tokensOperacion.remove(tokensOperacion.lastIndexOf("/")));
                                 numIns++;
-                        	}
-                        	else {
-                        		fuenteTemp = tokensOperacion.remove(tokensOperacion.lastIndexOf("/")-1);
-                        		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                            }
+                            else {
+                                fuenteTemp = tokensOperacion.remove(tokensOperacion.lastIndexOf("/")-1);
+                                // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                 numeroIns.add(numIns);
                                 objeto.add("T1");
                                 fuente.add(fuenteTemp);
@@ -531,25 +548,25 @@ public class Intermedio {
                                 // Asignamos el operador
                                 operador.add(tokensOperacion.remove(tokensOperacion.lastIndexOf("/")));
                                 numIns++;
-                        	}
-                        	// Si hay más de un elemento
-                        	if (tokensOperacion.size() > 1)
-	                        	// Se agrega a la lista el triplo realizado.
-	                            tokensOperacion.add(fuenteTemp);
-                        	else
-                        		// Si lo que continua es la operacion, nos preparamos para asignar el triplo
-                        		tokensOperacion.add("T1");
+                            }
+                            // Si hay mas de un elemento
+                            if (tokensOperacion.size() > 1)
+                                // Se agrega a la lista el triplo realizado.
+                                tokensOperacion.add(fuenteTemp);
+                            else
+                                // Si lo que continua es la operacion, nos preparamos para asignar el triplo
+                                tokensOperacion.add("T1");
                             
                             continue;
                         }
                         
                         // Si solo quedan sumas y restas.
                         else {
-                        	// Variable que almacenara la fuente temporal
-                    		String fuenteTemp = "";
-                        	// Debemos revisar si el anterior objeto no es T1
-                        	if (!objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
-                        		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                            // Variable que almacenara la fuente temporal
+                            String fuenteTemp = "";
+                            // Debemos revisar si no hay objetos registrados o el anterior objeto no es T1
+                            if (objeto.isEmpty() || !objeto.get(objeto.size()-1).equalsIgnoreCase("T1")) {
+                                // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                 numeroIns.add(numIns);
                                 objeto.add("T1");
                                 fuente.add(tokensOperacion.remove(tokensOperacion.size()-3));
@@ -563,10 +580,10 @@ public class Intermedio {
                                 fuente.add(fuenteTemp);
                                 operador.add(tokensOperacion.remove(tokensOperacion.size()-1));
                                 numIns++;
-                        	}
-                        	else {
-                        		fuenteTemp = tokensOperacion.remove(tokensOperacion.size()-3);
-                        		// Se almacena la antepenultima variable en el triplo y se elimina de la lista.
+                            }
+                            else {
+                                fuenteTemp = tokensOperacion.remove(tokensOperacion.size()-3);
+                                // Se almacena la antepenultima variable en el triplo y se elimina de la lista.
                                 numeroIns.add(numIns);
                                 objeto.add("T1");
                                 fuente.add(fuenteTemp);
@@ -575,14 +592,14 @@ public class Intermedio {
                                 // Asignamos el operador
                                 operador.add(tokensOperacion.remove(tokensOperacion.size()-1));
                                 numIns++;
-                        	}
-                        	// Si hay más de un elemento
-                        	if (tokensOperacion.size() > 1)
-	                        	// Se agrega a la lista el triplo realizado.
-	                            tokensOperacion.add(fuenteTemp);
-                        	else
-                        		// Si lo que continua es la operacion, nos preparamos para asignar el triplo
-                        		tokensOperacion.add("T1");
+                            }
+                            // Si hay mas de un elemento
+                            if (tokensOperacion.size() > 1)
+                                // Se agrega a la lista el triplo realizado.
+                                tokensOperacion.add(fuenteTemp);
+                            else
+                                // Si lo que continua es la operacion, nos preparamos para asignar el triplo
+                                tokensOperacion.add("T1");
                         }
                         
                     }
@@ -599,14 +616,14 @@ public class Intermedio {
         }
         
         // Ahora se genera el texto de la tripleta.
-        StringBuilder texto = new StringBuilder("\tDato Objeto\tDato Fuente\tOperador");
+        StringBuilder texto = new StringBuilder("\tOperador\tDato Objeto\tDato Fuente");
         
         texto.append(LINEA);
         for (int i = 0; i < numeroIns.size(); i++) {
             texto.append(numeroIns.get(i)).append("\t")
-                    .append(objeto.get(i)).append("\t\t")
-                    .append(fuente.get(i)).append("\t\t")
-                    .append(operador.get(i)).append("\t").append(LINEA);
+                    .append(operador.get(i)).append("\t\t\t")
+                    .append(objeto.get(i)).append("\t\t\t")
+                    .append(fuente.get(i)).append(LINEA);
         }
         texto.append(numeroIns.size()+1).append("\tFIN");
         
@@ -615,6 +632,16 @@ public class Intermedio {
         
         // Se guarda el archivo.
         Archivo.guardar("Codigo Intermedio.txt", texto.toString());
+        
+        // Ahora generamos el texto del las operaciones en prefijo
+        texto = new StringBuilder();
+        
+        for (String prefijo_str: prefijo) {
+            texto.append(prefijo_str).append(LINEA);
+        }
+        
+        // Igual de las operaciones en prefijo
+        Archivo.guardar("Prefijo.txt", texto.toString());
         
         return codigo;
     }

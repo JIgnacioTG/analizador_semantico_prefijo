@@ -17,6 +17,7 @@ public class Codigo {
     ArrayList<String> tipo;
     ArrayList<String> valor;
     ArrayList<String> errores;
+    ArrayList<String> IDEUtil;
     Stack<String> varSwitch;
     Stack<String> tipoSwitch;
     int numSwitch;
@@ -31,6 +32,7 @@ public class Codigo {
         tipo = new ArrayList<>();
         valor = new ArrayList<>();
         errores = new ArrayList<>();
+        IDEUtil = new ArrayList<>();
         varSwitch = new Stack<>();
         tipoSwitch = new Stack<>();
         tripleta = new Tripleta();

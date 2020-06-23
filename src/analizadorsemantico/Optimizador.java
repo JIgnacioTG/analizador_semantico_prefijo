@@ -83,6 +83,75 @@ public class Optimizador {
             // Si hay una palabra reservada
             else if (actualToken.contains("PR")) {
                 
+                // Si el siguiente es un IDE
+                if (posToken.contains("IDE")) {
+                    
+                    // Bandera para eliminación de código
+                    Boolean eliminar = true;
+
+                    // Se debe verificar si este IDE es utilizado
+                    for (int j = 0; j < codigo.IDEUtil.size(); j++) {
+
+                        // Si el IDE ha sido utilizado, se marca la bandera de Eliminar como falsa.
+                        if (posToken.equalsIgnoreCase(codigo.IDEUtil.get(j))) {
+                            eliminar = false;
+                            break;
+                        }
+                    }
+
+                    // Si la variable se debe eliminar
+                    if (eliminar) {
+                        
+                        // Se salta la lectura de la PR
+                        i++;
+                        
+                        // Mientras no se llegue a un delimitador, saltar tokens.
+                        while (!codigo.token.get(i).equalsIgnoreCase("DEL")) {
+                            i++;
+                        }
+
+                        // En este caso el valor no sera añadido asi que se continua con el ciclo.
+                        continue;
+                    }
+                    
+                }
+                
+                // Si el siguiente token es un parentesis inicial.
+                if (posToken.equalsIgnoreCase("PAR1")) {
+                    // Si el siguiente es un IDE
+                    if (codigo.token.get(i+2).contains("IDE")) {
+
+                        // Bandera para eliminación de código
+                        Boolean eliminar = true;
+
+                        // Se debe verificar si este IDE es utilizado
+                        for (int j = 0; j < codigo.IDEUtil.size(); j++) {
+
+                            // Si el IDE ha sido utilizado, se marca la bandera de Eliminar como falsa.
+                            if (codigo.token.get(i+2).equalsIgnoreCase(codigo.IDEUtil.get(j))) {
+                                eliminar = false;
+                                break;
+                            }
+                        }
+
+                        // Si la variable se debe eliminar
+                        if (eliminar) {
+
+                            // Se salta la lectura de la PR y PAR
+                            i+=2;
+
+                            // Mientras no se llegue a un delimitador, saltar tokens.
+                            while (!codigo.token.get(i).equalsIgnoreCase("DEL")) {
+                                i++;
+                            }
+
+                            // En este caso el valor no sera añadido asi que se continua con el ciclo.
+                            continue;
+                        }
+
+                    }
+                }
+                
                 // Si el anterior token es un parentesis.
                 if (preToken.equalsIgnoreCase("PAR2")) {
                     
@@ -90,7 +159,7 @@ public class Optimizador {
                     stb.append(LINEA);
                 }
                 
-                if (actualValor.equalsIgnoreCase("switch") || actualValor.equalsIgnoreCase("default") || actualValor.equalsIgnoreCase("break")) {
+                if (actualValor.equalsIgnoreCase("if") || actualValor.equalsIgnoreCase("else")) {
                     stb.append(actualValor);
                     tokensOpt.add(actualToken);
                     valorTokensOpt.add(actualValor);
@@ -146,7 +215,7 @@ public class Optimizador {
                 for (int j = 0; j < codigo.variable.size(); j++) {
                     
                     // Si la variable contiene de valor 1, se ignora.
-                    if (codigo.valor.get(j).equalsIgnoreCase("1 ") || codigo.valor.get(j).equalsIgnoreCase("null")) {
+                    if (codigo.valor.get(j).equalsIgnoreCase("1") || codigo.valor.get(j).equalsIgnoreCase("null")) {
                         continue;
                     }
                     
@@ -239,7 +308,39 @@ public class Optimizador {
                     
                 }
                 
+            }
+            
+            // Si hay un identificador
+            else if (actualToken.contains("IDE")) {
                 
+                // Bandera para eliminación de código
+                Boolean eliminar = true;
+                
+                // Se debe verificar si este IDE es utilizado
+                for (int j = 0; j < codigo.IDEUtil.size(); j++) {
+                    
+                    // Si el IDE ha sido utilizado, se marca la bandera de Eliminar como falsa.
+                    if (actualToken.equalsIgnoreCase(codigo.IDEUtil.get(j))) {
+                        eliminar = false;
+                        break;
+                    }
+                }
+                
+                // Si la variable se debe eliminar
+                if (eliminar) {
+                    
+                    // Mientras no se llegue a un delimitador, saltar tokens.
+                    while (!codigo.token.get(i).equalsIgnoreCase("DEL")) {
+                        i++;
+                    }
+                    
+                    // En este caso el valor no sera añadido asi que se continua con el ciclo.
+                    continue;
+                }
+                
+                stb.append(actualValor);
+                tokensOpt.add(actualToken);
+                valorTokensOpt.add(actualValor);
             }
             
             // Con cualquier otro token, se escribe tal cual.

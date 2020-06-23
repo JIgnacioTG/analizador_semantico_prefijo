@@ -12,6 +12,7 @@ public class Analizador {
     
     private static Codigo codigo;
     private static int tIDE, tOA, tPR, tCE, tCF, tOR, tOB;
+    private static String ultimoIDE;
     private static final String LINEA = System.getProperty("line.separator"); //Variable que genera los saltos de linea detectando el sistema del usuario.
     
     /**
@@ -25,6 +26,7 @@ public class Analizador {
         
         codigo = new Codigo(texto);
         tIDE = 0; tOA = 0; tPR = 0; tCE = 0; tCF = 0; tOR = 0; tOB = 0;
+        ultimoIDE = "";
         
         // Antes de iniciar, se deben eliminar los tabs del codigo para evitar errores adicionales.
         codigo.codigo = codigo.codigo.replace("\t", "");
@@ -610,6 +612,16 @@ public class Analizador {
                                 codigo.token.add(codigo.token.get(t));
                                 codigo.valorToken.add(codigo.valorToken.get(t));
                                 nuevo = false;
+                                
+                                // Se debe registrar la posición de esta variable que esta siendo utilizada en una asignación.
+                                if (asignacion || condicion) {
+                                    codigo.IDEUtil.add(codigo.token.get(t));
+                                }
+                                // Pero si se trata de una variable que no se esta asignando o no esta en un condicion.
+                                else if (!asignacion && !condicion) {
+                                    // Se guarda, al final se conserva la ultima.
+                                    ultimoIDE = codigo.token.get(t);
+                                }
                             
                                 break;
                             }
@@ -623,6 +635,12 @@ public class Analizador {
                             tIDE++;
                             codigo.token.add("IDE" +tIDE);
                             codigo.valorToken.add(palabra[j]);
+                            
+                            // Pero si se trata de una variable que no se esta asignando o no esta en una condicion.
+                            if (!asignacion && !condicion) {
+                                // Se guarda, al final se conserva la ultima.
+                                ultimoIDE = "IDE" +tIDE;
+                            }
                         }
                     }
                     // Si no hay ningun token, se registra el primero
@@ -654,6 +672,9 @@ public class Analizador {
             }
         }
         
+        // Se agrega como utilizado el ultimo IDE.
+        codigo.IDEUtil.add(ultimoIDE);
+        
         // Debemos generar el archivo de Tokens
         // Primero debemos guardar en un string todos los tokens encontrados
         StringBuilder stbTokens = new StringBuilder();
@@ -670,9 +691,6 @@ public class Analizador {
         
         // Guardamos el archivo de Tokens
         Archivo.guardar("Tokens.txt", stbTokens.toString());
-        
-        // Se genera el ensamblador
-        //generarEnsamblador();
         
         return codigo;
     }
